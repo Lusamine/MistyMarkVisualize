@@ -2,6 +2,7 @@ using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 using NetTopologySuite.Operation.Union;
 using System.Globalization;
+using System.Text;
 
 namespace MistyMarkVisualize;
 
@@ -62,6 +63,24 @@ public static class MistyMarkVisualizer
         var hull = builder.GetConcaveHull(mistyPoints, envelope, tolerance); // Tweak tolerance value
         return BoundaryRenderer.Render(hull, mistyPoints, [], envelope);
     }
+
+    public static StringBuilder GetFilteredMistyList(List<Coordinate> mistyPoints, List<Coordinate> allPoints, double tolerance)
+    {
+        var builder = new MistyMarkHullBuilder();
+        var envelope = new Envelope(new Coordinate(2000, 2000));
+        var hull = builder.GetConcaveHull(mistyPoints, envelope, tolerance);
+
+        var filteredPoints = new StringBuilder();
+        foreach (var point in allPoints)
+        {
+            var geomPoint = new GeometryFactory().CreatePoint(point);
+            if (hull.Contains(geomPoint))
+            {
+                filteredPoints.AppendLine($"{point.X.ToString(CultureInfo.InvariantCulture)},{point.Y.ToString(CultureInfo.InvariantCulture)}");
+            }
+        }
+        return filteredPoints;
+    }
 }
 
 public static class BoundaryRenderer
@@ -78,11 +97,7 @@ public static class BoundaryRenderer
         return Render(geom, mistyPoints, nonMistyPoints, area, padding);
     }
 
-    public static Bitmap Render(Geometry geom, 
-        List<Coordinate> mistyPoints, 
-        List<Coordinate> nonMistyPoints, 
-        Envelope area,
-        int padding = 0)
+    public static Bitmap Render(Geometry geom, List<Coordinate> mistyPoints, List<Coordinate> nonMistyPoints, Envelope area, int padding = 0)
     {
         int width = (int)area.MaxX;
         int height = (int)area.MaxY;

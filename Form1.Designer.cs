@@ -57,7 +57,7 @@
             NUD_Tolerance.Name = "NUD_Tolerance";
             NUD_Tolerance.Size = new Size(100, 33);
             NUD_Tolerance.TabIndex = 1;
-            NUD_Tolerance.Value = new decimal(new int[] { 20, 0, 0, 0 });
+            NUD_Tolerance.Value = new decimal(new int[] { 17, 0, 0, 0 });
             // 
             // Form1
             // 
